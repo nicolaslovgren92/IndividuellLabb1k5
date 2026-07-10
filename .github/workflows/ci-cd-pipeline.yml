@@ -83,5 +83,5 @@ jobs:
       # Simulerat deployment-steg (webhook/notification)
       - name: Notify deployment (simulated)
         run: |
-          echo "✅ Image pushed: ${{ secrets.DOCKERHUB_USERNAME }}/ai-reliability-proxy:${{ github.sha }}"
-          echo "🚀 Deployment step would trigger here (webhook, Render, Railway etc.)"
+          echo "Image pushed: ${{ secrets.DOCKERHUB_USERNAME }}/ai-reliability-proxy:${{ github.sha }}"
+          echo "Deployment step would trigger here (webhook, Render, Railway etc.)"
