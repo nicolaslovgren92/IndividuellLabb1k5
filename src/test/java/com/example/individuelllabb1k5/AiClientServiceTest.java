@@ -3,8 +3,10 @@ package com.example.individuelllabb1k5;
 import com.example.individuelllabb1k5.dto.AiResponseDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 import tools.jackson.databind.ObjectMapper;
 
+@SpringBootTest(properties = "spring.profiles.active=test")
 public class AiClientServiceTest {
 
     private ObjectMapper objectMapper;
@@ -13,6 +15,7 @@ public class AiClientServiceTest {
     void Setup() {
         objectMapper = new ObjectMapper();
     }
+
 
     @Test
     void parseResponse_validJson_shouldReturnAiResponseDto() throws Exception {
