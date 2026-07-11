@@ -6,6 +6,7 @@ import com.example.individuelllabb1k5.service.AiClientService;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,7 +29,30 @@ public class AiController {
     }
 
     @PostMapping
-    public AiResponseDto analyzeGame(@RequestBody String gameName) {
+    public ResponseEntity<?> analyzeGame(@RequestBody String gameName) {
+
+        // A03: Injection-skydd — validera och sanera användarindata
+        if (gameName == null || gameName.isBlank()) {
+            return ResponseEntity.badRequest()
+                    .body("{\"error\": \"Input text cannot be empty\"}");
+        }
+
+        // Begränsa längden — långa inputs kan användas för prompt injection
+        if (gameName.length() > 2000) {
+            return ResponseEntity.badRequest()
+                    .body("{\"error\": \"Input too long. Maximum 2000 characters.\"}");
+        }
+
+        // Blockera uppenbara prompt injection-försök
+        String lowerInput = gameName.toLowerCase();
+        if (lowerInput.contains("ignore previous instructions") ||
+                lowerInput.contains("you are now") ||
+                lowerInput.contains("system prompt")) {
+            return ResponseEntity.badRequest()
+                    .body("{\"error\": \"Invalid input detected\"}");
+        }
+
+
         AiResponseDto result = aiClientService.analyzeGame(gameName);
 
         Set<ConstraintViolation<AiResponseDto>> violations = validator.validate(result);
@@ -40,9 +64,9 @@ public class AiController {
             fallback.setBad(List.of("N/A"));
             fallback.setScore(0);
             fallback.setSummary("AI response failed validation rules.");
-            return fallback;
+            return ResponseEntity.ok(fallback);
         }
 
-        return result;
+        return ResponseEntity.ok(result);
     }
 }
